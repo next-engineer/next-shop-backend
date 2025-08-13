@@ -7,13 +7,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
-
     @Bean
-    public OpenAPI openAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Next Java Server API")
-                        .description("Spring Boot REST API Documentation")
-                        .version("1.0.0"));
+    public OpenAPI shopOpenAPI() {
+        return new OpenAPI().info(new Info()
+                .title("Next Shop API")
+                .description("상품 검색/조회 API 문서")
+                .version("v1"));
     }
-} 
+}
