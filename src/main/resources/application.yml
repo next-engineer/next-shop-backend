@@ -2,14 +2,16 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+
 server:
   port: 8080
 
 spring:
-
-  profiles:
-    include: local
-
+  datasource:
+    url: jdbc:mysql://next-db.c74828wmikhx.ap-northeast-2.rds.amazonaws.com:3306/test?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: :<~2?A3d?*r]Z$[w-mUh2O~(YkWR
   jpa:
     hibernate:
       ddl-auto: update
