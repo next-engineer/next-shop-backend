@@ -1,4 +1,4 @@
-package com.next.app.exception;
+package com.example.next.app.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

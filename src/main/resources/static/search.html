@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>상품명 검색</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:#f6f7fb;color:#111}
+        header{background:#111;color:#fff;padding:14px 18px;font-weight:700}
+        main{max-width:960px;margin:28px auto;padding:0 16px}
+        .search{display:flex;gap:8px}
+        .search input{flex:1;padding:12px 14px;border:1px solid #d0d5db;border-radius:10px;font-size:16px}
+        .search button{padding:12px 16px;border:0;background:#111;color:#fff;border-radius:10px;cursor:pointer}
+        .meta{margin:12px 2px;color:#555;font-size:14px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:8px}
+        .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+        .name{font-weight:600;margin:0 0 6px}
+        .price{color:#2563eb;font-weight:700}
+        .pagination{display:flex;gap:8px;align-items:center;margin:18px 0}
+        .pagination button{padding:8px 12px;border:1px solid #d0d5db;background:#fff;border-radius:10px;cursor:pointer}
+        .pagination button:disabled{opacity:.5;cursor:not-allowed}
+        .empty{padding:24px;background:#fff;border:1px dashed #d0d5db;border-radius:12px;text-align:center;color:#666}
+    </style>
+</head>
+<body>
+<header>상품명 검색</header>
+<main>
+    <div class="search">
+        <input id="q" type="search" placeholder="상품명을 입력하세요 (예: 아이폰)" />
+        <button id="btn">검색</button>
+    </div>
+
+    <div class="meta" id="meta"></div>
+    <div class="grid" id="list"></div>
+
+    <div class="pagination">
+        <button id="prev">이전</button>
+        <span id="pageInfo"></span>
+        <button id="next">다음</button>
+    </div>
+</main>
+
+<script>
+    const BASE = "";             // 같은 서버면 빈 값 유지
+    const SIZE = 12;
+    const SORT = "id,desc";
+
+    let q = "";
+    let page = 0;
+    let totalPages = 0;
+
+    const $q = document.getElementById("q");
+    const $btn = document.getElementById("btn");
+    const $list = document.getElementById("list");
+    const $meta = document.getElementById("meta");
+    const $prev = document.getElementById("prev");
+    const $next = document.getElementById("next");
+    const $pageInfo = document.getElementById("pageInfo");
+
+    // URL의 ?q= 값을 초기 검색어로 사용
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("q")) {
+      q = params.get("q") ?? "";
+      $q.value = q;
+    }
+
+    $btn.addEventListener("click", () => { page = 0; q = $q.value.trim(); load(); });
+    $q.addEventListener("keydown", (e) => { if (e.key === "Enter") { page = 0; q = $q.value.trim(); load(); }});
+    $prev.addEventListener("click", () => { if (page > 0) { page--; load(); }});
+    $next.addEventListener("click", () => { if (page + 1 < totalPages) { page++; load(); }});
+
+    async function fetchProducts() {
+      // ✅ 이름만 검색하는 전용 엔드포인트 사용
+      const url = new URL(BASE + "/api/products/search-name", window.location.origin);
+      if (q) url.searchParams.set("q", q);
+      url.searchParams.set("page", page);
+      url.searchParams.set("size", SIZE);
+      url.searchParams.set("sort", SORT);
+      const res = await fetch(url.toString(), { headers: { "Accept": "application/json" }});
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    function render(data) {
+      const { content, totalElements, number, totalPages: tp } = data;
+      $meta.textContent = `총 ${totalElements}건 · 페이지 ${number + 1}/${tp}` + (q ? ` · 검색어 "${q}"` : "");
+      if (!content || content.length === 0) {
+        $list.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+      } else {
+        $list.innerHTML = content.map(p => `
+          <div class="card">
+            <p class="name">${p.name ?? "(이름 없음)"}</p>
+            <p class="price">${p.price ?? "-"}</p>
+            <p style="color:#777;font-size:12px">ID: ${p.id}</p>
+          </div>
+        `).join("");
+      }
+      totalPages = tp;
+      $prev.disabled = number <= 0;
+      $next.disabled = number + 1 >= tp;
+      $pageInfo.textContent = `${number + 1} / ${tp}`;
+    }
+
+    async function load() {
+      try {
+        const data = await fetchProducts();
+        render(data);
+      } catch (e) {
+        console.error(e);
+        alert("목록을 불러오지 못했습니다.");
+      }
+    }
+
+    // 페이지 로드시 자동 검색
+    load();
+</script>
+</body>
+</html>

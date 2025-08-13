@@ -1,4 +1,4 @@
-package com.next.app.api.user.entity;
+package com.example.next.app.api.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;

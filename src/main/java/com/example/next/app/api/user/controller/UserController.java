@@ -1,7 +1,7 @@
-package com.next.app.api.user.controller;
+package com.example.next.app.api.user.controller;
 
-import com.next.app.api.user.entity.User;
-import com.next.app.api.user.service.UserService;
+import com.example.next.app.api.user.entity.User;
+import com.example.next.app.api.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +35,15 @@ public class UserController {
     @GetMapping
     @Operation(summary = "모든 사용자 조회", description = "등록된 모든 사용자 목록을 반환합니다.")
     public List<User> getAllUsers(@Parameter(description = "삭제 포함 여부", example = "true")
+<<<<<<< HEAD:src/main/java/com/example/next/app/api/user/controller/UserController.java
+                                      @RequestParam(defaultValue = "false") boolean includeDeleted) {
+        return includeDeleted ? userService.listUsersAny()
+                            : userService.getAllUsers();
+=======
                                   @RequestParam(defaultValue = "false") boolean includeDeleted) {
         return includeDeleted ? userService.listUsersAny()
                 : userService.getAllUsers();
+>>>>>>> develop:src/main/java/com/next/app/api/user/controller/UserController.java
     }
 
     @GetMapping("/{id}")
