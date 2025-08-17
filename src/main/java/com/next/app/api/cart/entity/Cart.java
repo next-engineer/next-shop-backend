@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "carts")
+@Table(name = "carts",catalog="purchase")
 public class Cart {
 
     @Id

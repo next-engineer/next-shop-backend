@@ -12,7 +12,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user", catalog="users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
